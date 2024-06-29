@@ -1,0 +1,258 @@
+{
+	"schemaVersion": "4",
+	"info": {
+		"name": "get-stock-quote"
+	},
+	"parameter": {
+		"properties": {
+			"request": {
+				"description": "The request"
+			},
+			"config": {
+				"type": "object",
+				"description": "The service's configuration"
+			},
+			"env": {
+				"type": "object",
+				"description": "The host OS environment"
+			}
+		},
+		"additionalProperties": false
+	},
+	"start": "javascript.1",
+	"nodes": {
+		"javascript.1": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-javascript/javascript",
+			"name": "prepareCallData",
+			"method": "Execute",
+			"parameters": [
+				{
+					"name": "data",
+					"type": "jsonpath",
+					"value": "$",
+					"metaName": "Data",
+					"metaDescription": "The value to apply as the `data` argument of the JavaScript code. For objects and arrays, `data` is passed by reference."
+				},
+				{
+					"name": "code",
+					"type": "string",
+					"value": "\"//console.log(data.request.query.symbol);\\n  let symbol=data.request.query.symbol;\\n  let quoteUrl=`https://finnhub.io/api/v1/quote?symbol=${symbol}`;\\n  let profileUrl=`https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}`;\\n  let headers={\\n    \\\"X-Finnhub-Token\\\": process.env.FINNHUBTOKEN\\n  };\\n  return {quoteUrl, profileUrl, headers};\"",
+					"metaName": "Code",
+					"metaDescription": "A JavaScript function body. Supports `await` and returning promises. `data` is the value of the Data parameter. `logger` is the API Builder logger. See the docs for more info: https://docs.axway.com/bundle/api-builder/page/docs/developer_guide/flows/flow_nodes/javascript_flow_node/index.html"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.prepareCallData.result",
+					"routes": [
+						"rest.1"
+					],
+					"metaName": "Next"
+				},
+				"error": {
+					"context": "$.prepareCallData.error",
+					"routes": [],
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "Execute"
+		},
+		"rest.1": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-restclient/rest",
+			"name": "getQuote",
+			"method": "get",
+			"parameters": [
+				{
+					"name": "url",
+					"type": "jsonpath",
+					"value": "$.prepareCallData.result.quoteUrl",
+					"metaName": "URL",
+					"metaDescription": "The target URL."
+				},
+				{
+					"name": "headers",
+					"type": "jsonpath",
+					"value": "$.prepareCallData.result.headers",
+					"metaName": "Headers",
+					"metaDescription": "The HTTP headers to set. Overriding the default header keys is case-sensitive."
+				}
+			],
+			"outputs": {
+				"2xx": {
+					"routes": [
+						"javascript.2"
+					],
+					"context": "$.getQuote.response",
+					"metaName": "2XX"
+				},
+				"3xx": {
+					"routes": [],
+					"context": "$.getQuote.response",
+					"metaName": "3XX"
+				},
+				"4xx": {
+					"routes": [],
+					"context": "$.getQuote.response",
+					"metaName": "4XX"
+				},
+				"5xx": {
+					"routes": [],
+					"context": "$.getQuote.response",
+					"metaName": "5XX"
+				},
+				"error": {
+					"routes": [],
+					"context": "$.error",
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "GET"
+		},
+		"javascript.2": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-javascript/javascript",
+			"name": "prepareOutput",
+			"method": "Execute",
+			"parameters": [
+				{
+					"name": "data",
+					"type": "jsonpath",
+					"value": "$",
+					"metaName": "Data",
+					"metaDescription": "The value to apply as the `data` argument of the JavaScript code. For objects and arrays, `data` is passed by reference."
+				},
+				{
+					"name": "code",
+					"type": "string",
+					"value": "\"//console.log(data.getQuote.response);\\n  let rawQuote=data.getQuote.response.body;\\n  \\n  let quote= {\\n    \\\"Price\\\": rawQuote.c,\\n    \\\"Change\\\": rawQuote.d,\\n    \\\"ChangePercent\\\": rawQuote.dp,\\n    \\\"DayHigh\\\": rawQuote.h,\\n    \\\"DayLow\\\": rawQuote.l,\\n    \\\"OpenPrice\\\": rawQuote.o,\\n    \\\"PreviousClose\\\": rawQuote.pc,\\n    \\\"Symbol\\\": \\\"AAPL\\\",\\n    \\\"Name\\\": \\\"Apple Inc\\\"\\n  };\\n  return {quote};\""
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.prepareOutput.result",
+					"routes": [
+						"rest.2"
+					],
+					"metaName": "Next"
+				},
+				"error": {
+					"context": "$.prepareOutput.error",
+					"routes": [],
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "Execute"
+		},
+		"http.1": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Set HTTP Response",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "status",
+					"type": "number",
+					"value": "200",
+					"metaName": "Status",
+					"metaDescription": "The HTTP status code"
+				},
+				{
+					"name": "body",
+					"type": "jsonpath",
+					"value": "$.prepareFinalOutput.result.quote.quote"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"routes": [],
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
+		},
+		"rest.2": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-restclient/rest",
+			"name": "getProfile",
+			"method": "get",
+			"parameters": [
+				{
+					"name": "headers",
+					"type": "jsonpath",
+					"value": "$.prepareCallData.result.headers",
+					"metaName": "Headers",
+					"metaDescription": "The HTTP headers to set. Overriding the default header keys is case-sensitive."
+				},
+				{
+					"name": "url",
+					"type": "jsonpath",
+					"value": "$.prepareCallData.result.profileUrl",
+					"metaName": "URL",
+					"metaDescription": "The target URL."
+				}
+			],
+			"outputs": {
+				"2xx": {
+					"routes": [
+						"javascript.3"
+					],
+					"context": "$.getProfile.response",
+					"metaName": "2XX"
+				},
+				"3xx": {
+					"routes": [],
+					"context": "$.getProfile.response",
+					"metaName": "3XX"
+				},
+				"4xx": {
+					"routes": [],
+					"context": "$.getProfile.response",
+					"metaName": "4XX"
+				},
+				"5xx": {
+					"routes": [],
+					"context": "$.getProfile.response",
+					"metaName": "5XX"
+				},
+				"error": {
+					"routes": [],
+					"context": "$.error",
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "GET"
+		},
+		"javascript.3": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-javascript/javascript",
+			"name": "prepareFinalOutput",
+			"method": "Execute",
+			"parameters": [
+				{
+					"name": "data",
+					"type": "jsonpath",
+					"value": "$",
+					"metaName": "Data",
+					"metaDescription": "The value to apply as the `data` argument of the JavaScript code. For objects and arrays, `data` is passed by reference."
+				},
+				{
+					"name": "code",
+					"type": "string",
+					"value": "\"let rawProfile=data.getProfile.response.body;\\n  \\n  let quote = data.prepareOutput.result.quote;\\n  \\n  quote.Symbol=rawProfile.ticker;\\n  quote.Name=rawProfile.name;\\n  \\n  return {quote};\""
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.prepareFinalOutput.result.quote",
+					"routes": [
+						"http.1"
+					],
+					"metaName": "Next"
+				},
+				"error": {
+					"context": "$.error",
+					"routes": [],
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "Execute"
+		}
+	}
+}
