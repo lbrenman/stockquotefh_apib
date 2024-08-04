@@ -137,14 +137,16 @@
 				{
 					"name": "code",
 					"type": "string",
-					"value": "\"let quoteArray = data.flowResponse;\\n  \\n  let quoteArrayClean = quoteArray.filter((element) => element.Change != null);\\n  \\n  /*\\n  for(var i=0; i<quoteArray.length;i++) {\\n    if(!quoteArray[i].Change) {\\n      quoteArray.splice(i, 1);\\n    }\\n  }\\n */ \\n  \\n  \\n  console.log(quoteArrayClean);\\n  \\n  return quoteArrayClean;\""
+					"value": "\"let quoteArray = data.flowResponse;\\n  \\n  let quoteArrayClean = quoteArray.filter((element) => element.Change != null);\\n  \\n  /*\\n  for(var i=0; i<quoteArray.length;i++) {\\n    if(!quoteArray[i].Change) {\\n      quoteArray.splice(i, 1);\\n    }\\n  }\\n */ \\n  \\n  \\n  console.log(quoteArrayClean);\\n  \\n  return quoteArrayClean;\"",
+					"metaName": "Code",
+					"metaDescription": "A JavaScript function body. Supports `await` and returning promises. `data` is the value of the Data parameter. `logger` is the API Builder logger. See the docs for more info: https://docs.axway.com/bundle/api-builder/page/docs/developer_guide/flows/flow_nodes/javascript_flow_node/index.html"
 				}
 			],
 			"outputs": {
 				"next": {
 					"context": "$.flowResponse",
 					"routes": [
-						"http.1"
+						"javascript.3"
 					],
 					"metaName": "Next"
 				},
@@ -155,6 +157,107 @@
 				}
 			},
 			"metaMethod": "Execute"
+		},
+		"javascript.3": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-javascript/javascript",
+			"name": "Check if response is empty",
+			"method": "Execute",
+			"parameters": [
+				{
+					"name": "data",
+					"type": "jsonpath",
+					"value": "$",
+					"metaName": "Data",
+					"metaDescription": "The value to apply as the `data` argument of the JavaScript code. For objects and arrays, `data` is passed by reference."
+				},
+				{
+					"name": "code",
+					"type": "string",
+					"value": "\"//console.log('data.flowResponse');\\n  //console.log(data.flowResponse);\\n  \\n  return data.flowResponse.length == 0;\"",
+					"metaName": "Code",
+					"metaDescription": "A JavaScript function body. Supports `await` and returning promises. `data` is the value of the Data parameter. `logger` is the API Builder logger. See the docs for more info: https://docs.axway.com/bundle/api-builder/page/docs/developer_guide/flows/flow_nodes/javascript_flow_node/index.html"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.result",
+					"routes": [
+						"condition.1"
+					],
+					"metaName": "Next"
+				},
+				"error": {
+					"context": "$.error",
+					"routes": [],
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "Execute"
+		},
+		"condition.1": {
+			"type": "nodehandler://axway-flow/condition",
+			"name": "Is response empty",
+			"method": "equals",
+			"parameters": [
+				{
+					"name": "source",
+					"type": "jsonpath",
+					"value": "$.result",
+					"metaName": "Source",
+					"metaDescription": "The input to test."
+				},
+				{
+					"name": "value",
+					"type": "boolean",
+					"value": "true",
+					"metaName": "Value",
+					"metaDescription": "The value to test input against."
+				}
+			],
+			"outputs": {
+				"true": {
+					"routes": [
+						"http.2"
+					],
+					"context": "$.equals",
+					"metaName": "True"
+				},
+				"false": {
+					"routes": [
+						"http.1"
+					],
+					"context": "$.equals",
+					"metaName": "False"
+				}
+			},
+			"metaMethod": "Equals"
+		},
+		"http.2": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Set HTTP 404 Response",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "body",
+					"type": "string",
+					"value": "\"{ \\\"message\\\": \\\"Bad symbols\\\" }\"",
+					"metaName": "Body",
+					"metaDescription": "The response payload"
+				},
+				{
+					"name": "status",
+					"type": "number",
+					"value": "404"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"routes": [],
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
 		}
 	}
 }

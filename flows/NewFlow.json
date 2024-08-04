@@ -114,22 +114,30 @@
 					"metaName": "2XX"
 				},
 				"3xx": {
-					"routes": [],
+					"routes": [
+						"invoke-flow-response.2"
+					],
 					"context": "$.getQuote.response",
 					"metaName": "3XX"
 				},
 				"4xx": {
-					"routes": [],
+					"routes": [
+						"invoke-flow-response.2"
+					],
 					"context": "$.getQuote.response",
 					"metaName": "4XX"
 				},
 				"5xx": {
-					"routes": [],
+					"routes": [
+						"invoke-flow-response.2"
+					],
 					"context": "$.getQuote.response",
 					"metaName": "5XX"
 				},
 				"error": {
-					"routes": [],
+					"routes": [
+						"invoke-flow-response.2"
+					],
 					"context": "$.error",
 					"metaName": "Error"
 				}
@@ -201,22 +209,30 @@
 					"metaName": "2XX"
 				},
 				"3xx": {
-					"routes": [],
+					"routes": [
+						"invoke-flow-response.2"
+					],
 					"context": "$.getProfile.response",
 					"metaName": "3XX"
 				},
 				"4xx": {
-					"routes": [],
+					"routes": [
+						"invoke-flow-response.2"
+					],
 					"context": "$.getProfile.response",
 					"metaName": "4XX"
 				},
 				"5xx": {
-					"routes": [],
+					"routes": [
+						"invoke-flow-response.2"
+					],
 					"context": "$.getProfile.response",
 					"metaName": "5XX"
 				},
 				"error": {
-					"routes": [],
+					"routes": [
+						"invoke-flow-response.2"
+					],
 					"context": "$.error",
 					"metaName": "Error"
 				}
@@ -238,7 +254,9 @@
 				{
 					"name": "code",
 					"type": "string",
-					"value": "\"let rawProfile=data.getProfile.response.body;\\n  \\n  let quote = data.prepareOutput.result.quote;\\n  \\n  quote.Symbol=rawProfile.ticker;\\n  quote.Name=rawProfile.name;\\n  \\n  return quote;\""
+					"value": "\"let rawProfile=data.getProfile.response.body;\\n  \\n  let quote = data.prepareOutput.result.quote;\\n  \\n  quote.Symbol=rawProfile.ticker;\\n  quote.Name=rawProfile.name;\\n  \\n  return quote;\"",
+					"metaName": "Code",
+					"metaDescription": "A JavaScript function body. Supports `await` and returning promises. `data` is the value of the Data parameter. `logger` is the API Builder logger. See the docs for more info: https://docs.axway.com/bundle/api-builder/page/docs/developer_guide/flows/flow_nodes/javascript_flow_node/index.html"
 				}
 			],
 			"outputs": {
@@ -256,6 +274,28 @@
 				}
 			},
 			"metaMethod": "Execute"
+		},
+		"invoke-flow-response.2": {
+			"type": "nodehandler://@axway/api-builder-plugin-invoke-flow/invoke-flow-response",
+			"name": "Set Error Response",
+			"method": "setResponse",
+			"parameters": [
+				{
+					"name": "isError",
+					"type": "boolean",
+					"value": "true"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"routes": []
+				},
+				"error": {
+					"context": "$.error",
+					"routes": []
+				}
+			}
 		}
 	}
 }

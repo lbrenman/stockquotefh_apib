@@ -86,22 +86,30 @@
 					"metaName": "2XX"
 				},
 				"3xx": {
-					"routes": [],
+					"routes": [
+						"http.2"
+					],
 					"context": "$.getQuote.response",
 					"metaName": "3XX"
 				},
 				"4xx": {
-					"routes": [],
+					"routes": [
+						"http.2"
+					],
 					"context": "$.getQuote.response",
 					"metaName": "4XX"
 				},
 				"5xx": {
-					"routes": [],
+					"routes": [
+						"http.2"
+					],
 					"context": "$.getQuote.response",
 					"metaName": "5XX"
 				},
 				"error": {
-					"routes": [],
+					"routes": [
+						"http.2"
+					],
 					"context": "$.error",
 					"metaName": "Error"
 				}
@@ -123,7 +131,9 @@
 				{
 					"name": "code",
 					"type": "string",
-					"value": "\"//console.log(data.getQuote.response);\\n  let rawQuote=data.getQuote.response.body;\\n  \\n  let quote= {\\n    \\\"Price\\\": rawQuote.c,\\n    \\\"Change\\\": rawQuote.d,\\n    \\\"ChangePercent\\\": rawQuote.dp,\\n    \\\"DayHigh\\\": rawQuote.h,\\n    \\\"DayLow\\\": rawQuote.l,\\n    \\\"OpenPrice\\\": rawQuote.o,\\n    \\\"PreviousClose\\\": rawQuote.pc,\\n    \\\"Symbol\\\": \\\"AAPL\\\",\\n    \\\"Name\\\": \\\"Apple Inc\\\"\\n  };\\n  return {quote};\""
+					"value": "\"//console.log(data.getQuote.response);\\n  let rawQuote=data.getQuote.response.body;\\n  \\n  let quote= {\\n    \\\"Price\\\": rawQuote.c,\\n    \\\"Change\\\": rawQuote.d,\\n    \\\"ChangePercent\\\": rawQuote.dp,\\n    \\\"DayHigh\\\": rawQuote.h,\\n    \\\"DayLow\\\": rawQuote.l,\\n    \\\"OpenPrice\\\": rawQuote.o,\\n    \\\"PreviousClose\\\": rawQuote.pc,\\n    \\\"Symbol\\\": \\\"AAPL\\\",\\n    \\\"Name\\\": \\\"Apple Inc\\\"\\n  };\\n  return {quote};\"",
+					"metaName": "Code",
+					"metaDescription": "A JavaScript function body. Supports `await` and returning promises. `data` is the value of the Data parameter. `logger` is the API Builder logger. See the docs for more info: https://docs.axway.com/bundle/api-builder/page/docs/developer_guide/flows/flow_nodes/javascript_flow_node/index.html"
 				}
 			],
 			"outputs": {
@@ -157,7 +167,9 @@
 				{
 					"name": "body",
 					"type": "jsonpath",
-					"value": "$.prepareFinalOutput.result.quote.quote"
+					"value": "$.prepareFinalOutput.result.quote.quote",
+					"metaName": "Body",
+					"metaDescription": "The response payload"
 				}
 			],
 			"outputs": {
@@ -192,28 +204,36 @@
 			"outputs": {
 				"2xx": {
 					"routes": [
-						"javascript.3"
+						"javascript.4"
 					],
 					"context": "$.getProfile.response",
 					"metaName": "2XX"
 				},
 				"3xx": {
-					"routes": [],
+					"routes": [
+						"http.2"
+					],
 					"context": "$.getProfile.response",
 					"metaName": "3XX"
 				},
 				"4xx": {
-					"routes": [],
+					"routes": [
+						"http.2"
+					],
 					"context": "$.getProfile.response",
 					"metaName": "4XX"
 				},
 				"5xx": {
-					"routes": [],
+					"routes": [
+						"http.2"
+					],
 					"context": "$.getProfile.response",
 					"metaName": "5XX"
 				},
 				"error": {
-					"routes": [],
+					"routes": [
+						"http.2"
+					],
 					"context": "$.error",
 					"metaName": "Error"
 				}
@@ -235,7 +255,9 @@
 				{
 					"name": "code",
 					"type": "string",
-					"value": "\"let rawProfile=data.getProfile.response.body;\\n  \\n  let quote = data.prepareOutput.result.quote;\\n  \\n  quote.Symbol=rawProfile.ticker;\\n  quote.Name=rawProfile.name;\\n  \\n  return {quote};\""
+					"value": "\"let rawProfile=data.getProfile.response.body;\\n  \\n  let quote = data.prepareOutput.result.quote;\\n  \\n  quote.Symbol=rawProfile.ticker;\\n  quote.Name=rawProfile.name;\\n  \\n  return {quote};\"",
+					"metaName": "Code",
+					"metaDescription": "A JavaScript function body. Supports `await` and returning promises. `data` is the value of the Data parameter. `logger` is the API Builder logger. See the docs for more info: https://docs.axway.com/bundle/api-builder/page/docs/developer_guide/flows/flow_nodes/javascript_flow_node/index.html"
 				}
 			],
 			"outputs": {
@@ -243,6 +265,132 @@
 					"context": "$.prepareFinalOutput.result.quote",
 					"routes": [
 						"http.1"
+					],
+					"metaName": "Next"
+				},
+				"error": {
+					"context": "$.error",
+					"routes": [],
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "Execute"
+		},
+		"http.2": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Set HTTP 500 Response",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "body",
+					"type": "string",
+					"value": "\"{     \\\"message\\\": \\\"Server error\\\" }\"",
+					"metaName": "Body",
+					"metaDescription": "The response payload"
+				},
+				{
+					"name": "status",
+					"type": "number",
+					"value": "500",
+					"metaName": "Status",
+					"metaDescription": "The HTTP status code"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"routes": [],
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
+		},
+		"condition.1": {
+			"type": "nodehandler://axway-flow/condition",
+			"name": "Check if profile output is empty",
+			"method": "equals",
+			"parameters": [
+				{
+					"name": "source",
+					"type": "jsonpath",
+					"value": "$.result"
+				},
+				{
+					"name": "value",
+					"type": "boolean",
+					"value": "true"
+				}
+			],
+			"outputs": {
+				"true": {
+					"routes": [
+						"http.3"
+					],
+					"context": "$.equals",
+					"metaName": "True"
+				},
+				"false": {
+					"routes": [
+						"javascript.3"
+					],
+					"context": "$.equals",
+					"metaName": "False"
+				}
+			},
+			"metaMethod": "Equals"
+		},
+		"http.3": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Set HTTP 404 Response",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "status",
+					"type": "number",
+					"value": "404",
+					"metaName": "Status",
+					"metaDescription": "The HTTP status code"
+				},
+				{
+					"name": "body",
+					"type": "string",
+					"value": "\"{     \\\"message\\\": \\\"Bad symbol\\\" }\"",
+					"metaName": "Body",
+					"metaDescription": "The response payload"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"routes": [],
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
+		},
+		"javascript.4": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-javascript/javascript",
+			"name": "Check response body",
+			"method": "Execute",
+			"parameters": [
+				{
+					"name": "data",
+					"type": "jsonpath",
+					"value": "$",
+					"metaName": "Data",
+					"metaDescription": "The value to apply as the `data` argument of the JavaScript code. For objects and arrays, `data` is passed by reference."
+				},
+				{
+					"name": "code",
+					"type": "string",
+					"value": "\"const isEmpty = obj => JSON.stringify(obj) === '{}';\\n  \\n  //console.log('data.getProfile.response.body');\\n  //console.log(data.getProfile.response.body);\\n  \\n  return isEmpty(data.getProfile.response.body);\""
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.result",
+					"routes": [
+						"condition.1"
 					],
 					"metaName": "Next"
 				},
