@@ -313,12 +313,16 @@
 				{
 					"name": "source",
 					"type": "jsonpath",
-					"value": "$.result"
+					"value": "$.result",
+					"metaName": "Source",
+					"metaDescription": "The input to test."
 				},
 				{
 					"name": "value",
 					"type": "boolean",
-					"value": "true"
+					"value": "true",
+					"metaName": "Value",
+					"metaDescription": "The value to test input against."
 				}
 			],
 			"outputs": {
@@ -341,22 +345,22 @@
 		},
 		"http.3": {
 			"type": "nodehandler://axway-flow/http",
-			"name": "Set HTTP 404 Response",
+			"name": "Set HTTP 204 Response",
 			"method": "setresponse",
 			"parameters": [
-				{
-					"name": "status",
-					"type": "number",
-					"value": "404",
-					"metaName": "Status",
-					"metaDescription": "The HTTP status code"
-				},
 				{
 					"name": "body",
 					"type": "string",
 					"value": "\"{     \\\"message\\\": \\\"Bad symbol\\\" }\"",
 					"metaName": "Body",
 					"metaDescription": "The response payload"
+				},
+				{
+					"name": "status",
+					"type": "number",
+					"value": "204",
+					"metaName": "Status",
+					"metaDescription": "The HTTP status code"
 				}
 			],
 			"outputs": {
@@ -383,7 +387,9 @@
 				{
 					"name": "code",
 					"type": "string",
-					"value": "\"const isEmpty = obj => JSON.stringify(obj) === '{}';\\n  \\n  //console.log('data.getProfile.response.body');\\n  //console.log(data.getProfile.response.body);\\n  \\n  return isEmpty(data.getProfile.response.body);\""
+					"value": "\"const isEmpty = obj => JSON.stringify(obj) === '{}';\\n  \\n  //console.log('data.getProfile.response.body');\\n  //console.log(data.getProfile.response.body);\\n  \\n  return isEmpty(data.getProfile.response.body);\"",
+					"metaName": "Code",
+					"metaDescription": "A JavaScript function body. Supports `await` and returning promises. `data` is the value of the Data parameter. `logger` is the API Builder logger. See the docs for more info: https://docs.axway.com/bundle/api-builder/page/docs/developer_guide/flows/flow_nodes/javascript_flow_node/index.html"
 				}
 			],
 			"outputs": {

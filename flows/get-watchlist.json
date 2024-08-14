@@ -234,7 +234,7 @@
 		},
 		"http.2": {
 			"type": "nodehandler://axway-flow/http",
-			"name": "Set HTTP 404 Response",
+			"name": "Set HTTP 204 Response",
 			"method": "setresponse",
 			"parameters": [
 				{
@@ -247,7 +247,7 @@
 				{
 					"name": "status",
 					"type": "number",
-					"value": "404"
+					"value": "204"
 				}
 			],
 			"outputs": {
