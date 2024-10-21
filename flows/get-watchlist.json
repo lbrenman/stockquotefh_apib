@@ -137,9 +137,7 @@
 				{
 					"name": "code",
 					"type": "string",
-					"value": "\"let quoteArray = data.flowResponse;\\n  \\n  let quoteArrayClean = quoteArray.filter((element) => element.Change != null);\\n  \\n  /*\\n  for(var i=0; i<quoteArray.length;i++) {\\n    if(!quoteArray[i].Change) {\\n      quoteArray.splice(i, 1);\\n    }\\n  }\\n */ \\n  \\n  \\n  console.log(quoteArrayClean);\\n  \\n  return quoteArrayClean;\"",
-					"metaName": "Code",
-					"metaDescription": "A JavaScript function body. Supports `await` and returning promises. `data` is the value of the Data parameter. `logger` is the API Builder logger. See the docs for more info: https://docs.axway.com/bundle/api-builder/page/docs/developer_guide/flows/flow_nodes/javascript_flow_node/index.html"
+					"value": "\"let quoteArray = data.flowResponse;\\n  \\n  let quoteArrayClean = quoteArray.filter((element) => element.Change != null);\\n  \\n  /*\\n  for(var i=0; i<quoteArray.length;i++) {\\n    if(!quoteArray[i].Change) {\\n      quoteArray.splice(i, 1);\\n    }\\n  }\\n */ \\n  \\n  \\n  console.log(quoteArrayClean);\\n  \\n  let response = {\\n    Watchlist: quoteArrayClean\\n  };\\n  \\n  return response;\""
 				}
 			],
 			"outputs": {
@@ -247,7 +245,9 @@
 				{
 					"name": "status",
 					"type": "number",
-					"value": "204"
+					"value": "204",
+					"metaName": "Status",
+					"metaDescription": "The HTTP status code"
 				}
 			],
 			"outputs": {

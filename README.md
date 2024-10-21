@@ -1,6 +1,6 @@
 # API Builder Stock Quote Watchlist API
 
-A stock quote and watch list API based on Finnhub created in API Builder.
+A stock quote and watch list API based on [Finnhub](https://finnhub.io/) created in Axway's [API Builder](https://docs.axway.com/bundle/api-builder/page/docs/index.html).
 
 The project exposes two end points
 
